@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caffeine Intake Calculator</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1200px;  /* Reduce from 90% to fixed width */
+            min-width: 320px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;  /* Default for mobile */
+            grid-template-areas: 
+                "header"
+                "input"
+                "result"
+                "timeline"
+                "reset";
+            max-width: 100%;  /* Ensure container doesn't overflow body */
+            margin: 0 auto;
+            box-sizing: border-box;  /* Include padding in width calculation */
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas: 
+                    "header header"
+                    "input result"
+                    "timeline timeline"
+                    "reset reset";
+            }
+        }
+
+        @media (min-width: 1440px) {
+            body {
+                max-width: 1400px;  /* Maximum width for very large screens */
+            }
+        }
+
+        @media (max-width: 1240px) {  /* Account for body padding */
+            body {
+                max-width: 90%;
+            }
+        }
+
+        .drink-input {
+            grid-area: input;
+            margin-bottom: 0;
+            padding: 24px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .drink-input .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Add styles to control button placement */
+        .drink-input .button-group {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .drink-input .button-group button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        h1 {
+            grid-area: header;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .input-group select,
+        .input-group input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.15s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-group select:focus,
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Hide number input spinners but keep consistent styling */
+        .input-group input[type="number"]::-webkit-inner-spin-button,
+        .input-group input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .custom-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .custom-input.visible {
+            display: block;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .drink-input button {
+            background-color: #059669;
+        }
+
+        .drink-input button:hover {
+            background-color: #047857;
+        }
+
+        .drink-input .reset-button {
+            background-color: #64748b;
+        }
+
+        .drink-input .reset-button:hover {
+            background-color: #475569;
+        }
+
+        .result {
+            grid-area: result;
+            padding: 24px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+        .result h3 {
+            color: #1e293b;
+            margin-top: 0;
+            font-size: 1.25rem;
+        }
+
+        .drink-history {
+            height: auto;  /* Remove fixed height */
+            min-height: 100px;  /* Add min-height for initial state */
+            overflow-y: visible;  /* Remove scrollbar */
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+        }
+
+        .drink-history h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 5px 0;
+        }
+
+        .warning {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .warning.very-safe {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .warning.safe {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .warning.warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .warning.danger {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .timeline {
+            grid-area: timeline;
+            margin-top: 20px;
+            padding: 24px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            height: auto;  /* Remove fixed height */
+            min-height: 600px;  /* Use min-height instead */
+            display: flex;
+            flex-direction: column;
+            width: 100%;  /* Ensure full width */
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-height: 300px;  /* Keep minimum height */
+            position: relative;
+            margin-bottom: 15px;
+            width: 100%;  /* Ensure full width */
+            max-width: 100%;
+            box-sizing: border-box;
+            aspect-ratio: 16/9;  /* Maintain aspect ratio */
+        }
+
+        canvas {
+            width: 100% !important;
+            height: auto !important;  /* Allow height to adjust */
+            aspect-ratio: 16/9;  /* Maintain aspect ratio */
+        }
+
+        .drink-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.15s ease;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .drink-entry:hover {
+            background-color: #f8fafc;
+        }
+
+        .drink-entry button {
+            background-color: #ef4444;
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+
+        .drink-entry button:hover {
+            background-color: #dc2626;
+        }
+
+        .reset-button {
+            grid-area: reset;
+            justify-self: center;
+            width: 200px;
+            background-color: #64748b;
+        }
+
+        .reset-button:hover {
+            background-color: #475569;
+        }
+
+        /* Add styles for time input */
+        input[type="datetime-local"] {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        /* Add loading state for buttons */
+        button.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Add tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background-color: #1e293b;
+            color: white;
+            font-size: 0.875rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        /* Add new styles */
+        .caffeine-total {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .caffeine-total.very-safe {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .caffeine-total.safe {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .caffeine-total.warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .caffeine-total.danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .result p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .custom-legend {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background-color: #f8fafc;
+            margin-bottom: 10px;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: visible;  /* Remove scrollbar */
+        }
+
+        .custom-legend h4 {
+            margin: 0 0 8px 0;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .custom-legend ul {
+            display: flex;
+            flex-wrap: wrap;  /* Ensure items wrap to next line */
+            gap: 12px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;  /* Take full width */
+        }
+
+        .custom-legend li {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .custom-legend li:hover {
+            background-color: #e2e8f0;
+        }
+
+        .custom-legend .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            display: inline-block;
+        }
+
+        .custom-legend .dataset-hidden {
+            opacity: 0.5;
+        }
+
+        .input-group select {
+            margin-bottom: 8px;
+        }
+        
+        #drinkTimeDay,
+        #drinkTimeHour {
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .time-selects {
+                display: flex;
+                gap: 8px;
+            }
+            
+            #drinkTimeDay,
+            #drinkTimeHour {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Caffeine Intake Calculator</h1>
+        
+        <div class="drink-input">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="drinkType">Drink Type</label>
+                    <select id="drinkType" onchange="toggleCustomInput()" class="tooltip" data-tooltip="Select your caffeine source">
+                        <optgroup label="Coffee">
+                            <optgroup label="Caffe Nero">
+                                <option value="neroEspresso">Caffe Nero Espresso (45mg/30ml)</option>
+                                <option value="neroCappuccino">Caffe Nero Cappuccino (110mg/355ml)</option>
+                            </optgroup>
+                            <optgroup label="Costa Coffee">
+                                <option value="costaEspresso">Costa Espresso (100mg/30ml)</option>
+                                <option value="costaCappuccino">Costa Cappuccino (325mg/362ml)</option>
+                            </optgroup>
+                            <optgroup label="Greggs">
+                                <option value="greggsEspresso">Greggs Espresso (75mg/28ml)</option>
+                                <option value="greggsCappuccino">Greggs Cappuccino (197mg/341ml)</option>
+                            </optgroup>
+                            <optgroup label="Pret">
+                                <option value="pretEspresso">Pret Espresso (180mg/30ml)</option>
+                                <option value="pretCappuccino">Pret Cappuccino (180mg/350ml)</option>
+                            </optgroup>
+                            <optgroup label="Starbucks">
+                                <option value="starbucksEspresso">Starbucks Espresso (33mg/25ml)</option>
+                                <option value="starbucksCappuccino">Starbucks Cappuccino (66mg/350ml)</option>
+                                <option value="starbucksBlonde">Starbucks Blonde Roast (Grande - 270mg/473ml)</option>
+                                <option value="starbucksDark">Starbucks Dark Roast (Grande - 235mg/473ml)</option>
+                            </optgroup>
+                        </optgroup>
+                        <optgroup label="Energy Drinks">
+                            <option value="monsterEnergy">Monster Energy Original (160mg/473ml)</option>
+                            <option value="redbull">Red Bull Regular (80mg/250ml)</option>
+                            <option value="rockstar">Rockstar Original (160mg/473ml)</option>
+                        </optgroup>
+                        <optgroup label="Tea">
+                            <option value="blackTea">Black Tea (47mg/240ml)</option>
+                            <option value="greenTea">Green Tea (28mg/240ml)</option>
+                        </optgroup>
+                        <optgroup label="Soft Drinks">
+                            <option value="pepsi">Pepsi (38mg/330ml)</option>
+                            <option value="cocaCola">Coca-Cola (34mg/330ml)</option>
+                        </optgroup>
+                        <optgroup label="Custom">
+                            <option value="custom">Custom Amount</option>
+                        </optgroup>
+                    </select>
+                </div>
+            
+                <div class="input-group time-group">
+                    <label for="drinkTime">Time Consumed</label>
+                    <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
+                        <option value="0">Today</option>
+                        <option value="1">Tomorrow</option>
+                    </select>
+                    <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="sleepTime">Planned Sleep Time</label>
+                    <select id="sleepTime" class="tooltip" data-tooltip="When do you plan to sleep?">
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="quantity">Number of Drinks</label>
+                    <select id="quantity" class="tooltip" data-tooltip="How many drinks?">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="customInput" class="input-group custom-input">
+                <label for="customMg">Caffeine Amount (mg)</label>
+                <input type="number" 
+                       id="customMg" 
+                       placeholder="Enter caffeine in mg" 
+                       min="1" 
+                       max="500" 
+                       class="tooltip" 
+                       data-tooltip="Enter caffeine content in mg"
+                       style="width: 100%;">
+            </div>
+
+            <div class="button-group">
+                <button onclick="addDrink()" class="tooltip" data-tooltip="Add this drink to your timeline">
+                    Add Drink
+                </button>
+                <button onclick="resetCalculator()" class="reset-button tooltip" data-tooltip="Clear all drinks and start over">
+                    Reset Calculator
+                </button>
+            </div>
+        </div>
+
+        <div class="result">
+            <h3>Today's Caffeine Intake</h3>
+            <p>Consumed: <span id="totalConsumed" class="caffeine-total safe">0</span> mg</p>
+            <p>Remaining (as of <span id="currentTime">--:--</span>): <span id="remainingCaffeine" class="caffeine-total safe">0</span> mg</p>
+            <p>At sleep time (<span id="sleepTimeDisplay">--:--</span>): <span id="sleepTimeCaffeine" class="caffeine-total safe">0</span> mg</p>
+            <p id="warningMessage" class="warning"></p>
+        </div>
+
+        <div class="timeline">
+            <h3>Caffeine Timeline</h3>
+            <div class="chart-container">
+                <canvas id="caffeineChart"></canvas>
+            </div>
+            <div id="fixedLegend" class="custom-legend"></div>
+            <div id="drinksLegend" class="custom-legend"></div>
+            <div class="drink-history" id="drinkHistory">
+                <h4>Drink History</h4>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script>
+        const DAILY_LIMIT = 400; // FDA recommended maximum daily caffeine intake in mg
+        const caffeineContent = {
+            // Caffe Nero
+            neroEspresso: 45,         // Caffe Nero Espresso (45mg/30ml)
+            neroCappuccino: 110,      // Caffe Nero Cappuccino (110mg/355ml)
+            
+            // Costa Coffee
+            costaEspresso: 100,       // Costa Espresso (100mg/30ml)
+            costaCappuccino: 325,     // Costa Cappuccino (325mg/362ml)
+            
+            // Greggs
+            greggsEspresso: 75,       // Greggs Espresso (75mg/28ml)
+            greggsCappuccino: 197,    // Greggs Cappuccino (197mg/341ml)
+            
+            // Pret
+            pretEspresso: 180,        // Pret Espresso (180mg/30ml)
+            pretCappuccino: 180,      // Pret Cappuccino (180mg/350ml)
+            
+            // Starbucks
+            starbucksEspresso: 33,    // Starbucks Espresso (33mg/25ml)
+            starbucksCappuccino: 66,  // Starbucks Cappuccino (66mg/350ml)
+            starbucksBlonde: 270,     // Starbucks Blonde Roast (270mg/473ml)
+            starbucksDark: 235,       // Starbucks Dark Roast (235mg/473ml)
+            
+            // Energy Drinks
+            monsterEnergy: 160,       // Monster Energy Original (160mg/473ml)
+            redbull: 80,              // Red Bull Regular (80mg/250ml)
+            rockstar: 160,            // Rockstar Original (160mg/473ml)
+            
+            // Tea
+            blackTea: 47,             // Black Tea (47mg/240ml)
+            greenTea: 28,             // Green Tea (28mg/240ml)
+            
+            // Soft Drinks
+            pepsi: 38,                // Pepsi (38mg/330ml)
+            cocaCola: 34,             // Coca-Cola (34mg/330ml)
+            
+            // Custom drink
+            custom: 0                 // Custom amount (will be input by user)
+        };
+
+        let totalCaffeine = 0;
+        let drinks = [];
+        let chart = null;
+        let plannedSleepTime = null;
+
+        function toggleCustomInput() {
+            const drinkType = document.getElementById('drinkType').value;
+            const customInput = document.getElementById('customInput');
+            customInput.classList.toggle('visible', drinkType === 'custom');
+        }
+
+        function getStartOfToday() {
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        }
+
+        function setupTimeInputs() {
+            const hourSelect = document.getElementById('drinkTimeHour');
+            const daySelect = document.getElementById('drinkTimeDay');
+            
+            // Clear existing options
+            hourSelect.innerHTML = '';
+            daySelect.innerHTML = '';
+            
+            // Add day options - only Today and Tomorrow
+            const days = ['Today', 'Tomorrow'];
+            days.forEach((day, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = day;
+                daySelect.appendChild(option);
+            });
+            
+            // Function to update hour options based on selected day
+            const updateHourOptions = () => {
+                const now = new Date(); // Move this declaration inside the function
+                const option = document.createElement('option');
+                hourSelect.innerHTML = ''; // Clear existing options
+                
+                // Get selected day
+                const selectedDay = parseInt(daySelect.value);
+                // If tomorrow is selected, only show first 12 hours
+                const maxHours = selectedDay === 1 ? 12 : 24;
+                
+                for (let i = 0; i < maxHours; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    const hour = i % 12 || 12;
+                    const ampm = i < 12 ? 'AM' : 'PM';
+                    option.textContent = `${hour}:00 ${ampm}`;
+                    hourSelect.appendChild(option);
+                }
+                
+                // Set default to current hour if today, or first hour if tomorrow
+                if (selectedDay === 0) {
+                    hourSelect.value = now.getHours();
+                } else {
+                    hourSelect.value = 0;
+                }
+            };
+            
+            // Add event listener to day select to update hours
+            daySelect.addEventListener('change', updateHourOptions);
+            
+            // Initial setup of hours
+            updateHourOptions();
+        }
+
+        function getSelectedDateTime() {
+            const dayOffset = parseInt(document.getElementById('drinkTimeDay').value);
+            const hour = parseInt(document.getElementById('drinkTimeHour').value);
+            
+            const date = new Date();
+            date.setHours(hour, 0, 0, 0); // Set to exact hour
+            date.setDate(date.getDate() + dayOffset); // Add days instead of subtracting
+            
+            return date;
+        }
+
+        function addDrink() {
+            const drinkType = document.getElementById('drinkType').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            if (quantity < 1 || quantity > 10) {
+                alert('Please enter a quantity between 1 and 10');
+                return;
+            }
+
+            const timestamp = getSelectedDateTime();
+            const now = new Date();
+            const startOfToday = getStartOfToday();
+            const maxTime = new Date(startOfToday.getTime() + (72 * 60 * 60 * 1000)); // 72 hours after today
+            
+            // Only prevent adding drinks from previous days
+            if (timestamp < startOfToday) {
+                alert('Cannot add drinks from previous days!');
+                return;
+            }
+            if (timestamp > maxTime) {
+                alert('Cannot add drinks more than 2 days in advance!');
+                return;
+            }
+
+            let caffeine;
+            let drinkName;
+            if (drinkType === 'custom') {
+                const customMg = parseInt(document.getElementById('customMg').value);
+                if (isNaN(customMg) || customMg < 1 || customMg > 500) {
+                    alert('Please enter a valid caffeine amount between 1 and 500mg');
+                    return;
+                }
+                caffeine = customMg * quantity;
+                drinkName = `Custom (${customMg}mg)`;
+            } else {
+                caffeine = caffeineContent[drinkType] * quantity;
+                // Get the full text of the selected option including the volume info
+                const selectedOption = document.getElementById('drinkType').selectedOptions[0];
+                drinkName = selectedOption.text;
+            }
+
+            const drink = {
+                id: Date.now(),
+                name: drinkName,
+                caffeine: caffeine,
+                quantity: quantity,
+                timestamp: timestamp
+            };
+
+            console.log('Adding drink:', drink);
+            drinks.push(drink);
+            
+            // Sort drinks by timestamp
+            drinks.sort((a, b) => a.timestamp - b.timestamp);
+            
+            updateDisplay();
+            updateDrinkHistory();
+            updateChart();
+        }
+
+        function removeDrink(id) {
+            drinks = drinks.filter(drink => drink.id !== id);
+            updateDisplay();
+            updateDrinkHistory();
+            updateChart();
+        }
+
+        function updateDrinkHistory() {
+            const history = document.getElementById('drinkHistory');
+            history.innerHTML = '<h4>Drink History</h4>';
+            
+            drinks.forEach(drink => {
+                const entry = document.createElement('div');
+                entry.className = 'drink-entry';
+                const timeStr = drink.timestamp.toLocaleString();
+                entry.innerHTML = `
+                    <span>${timeStr}: ${drink.quantity}x ${drink.name}</span>
+                    <button onclick="removeDrink(${drink.id})">Remove</button>
+                `;
+                history.appendChild(entry);
+            });
+        }
+
+        function calculateCurrentCaffeine() {
+            const now = new Date();
+            const HALF_LIFE = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+            const startOfToday = getStartOfToday();
+            const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+            
+            // Calculate total remaining caffeine for all consumed drinks
+            const total = drinks
+                .filter(drink => 
+                    drink.timestamp >= startOfToday && 
+                    drink.timestamp <= now && 
+                    drink.timestamp < endOfToday
+                )
+                .reduce((total, drink) => {
+                    if (isNaN(drink.caffeine)) return total; // Skip invalid values
+                    const elapsed = now - drink.timestamp;
+                    const halfLives = elapsed / HALF_LIFE;
+                    const remainingCaffeine = drink.caffeine * Math.pow(0.5, halfLives);
+                    return total + remainingCaffeine;
+                }, 0);
+            
+            return Math.round(total) || 0; // Return 0 if NaN
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('caffeineChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const now = new Date();
+            const startOfToday = getStartOfToday();
+            const minTime = startOfToday; // Start from beginning of today
+            const endTime = new Date(startOfToday.getTime() + (36 * 60 * 60 * 1000)); // 36 hours forward
+
+            // Base datasets that are always present
+            const baseDatasets = [
+                {
+                    label: 'Total Caffeine',
+                    data: Array(36).fill(0),
+                    borderWidth: 2,
+                    borderColor: '#ff0000',
+                    fill: false
+                },
+                {
+                    label: 'FDA Daily Limit (400mg)',
+                    data: Array(36).fill(400),
+                    borderWidth: 2,
+                    borderColor: '#ff6b6b',
+                    borderDash: [5, 5],
+                    fill: false
+                },
+                {
+                    label: 'Sleep-Safe Level (<50mg)',
+                    data: Array(36).fill(50),
+                    borderWidth: 2,
+                    borderColor: '#22c55e',
+                    borderDash: [5, 5],
+                    fill: false
+                },
+                {
+                    label: 'Sleep Warning Level (<100mg)',
+                    data: Array(36).fill(100),
+                    borderWidth: 2,
+                    borderColor: '#3b82f6',
+                    borderDash: [5, 5],
+                    fill: false
+                }
+            ];
+
+            if (drinks.length === 0) {
+                // If no drinks, show 36h window from now to future
+                const hours = Array.from({length: 36}, (_, i) => i);
+                const labels = hours.map(h => {
+                    const time = new Date(minTime.getTime() + h * 60 * 60 * 1000);
+                    return time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                });
+                
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: baseDatasets
+                    },
+                    options: getChartOptions()
+                });
+                generateCustomLegends(chart);
+                return;
+            }
+
+            // Use fixed window for chart
+            const hours = Array.from({length: 36}, (_, i) => i);
+            const labels = hours.map(h => {
+                const time = new Date(minTime.getTime() + h * 60 * 60 * 1000);
+                return time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            });
+
+            // Filter drinks within our 36h window
+            const relevantDrinks = drinks.filter(drink => 
+                drink.timestamp >= minTime && 
+                drink.timestamp <= endTime
+            );
+
+            // Calculate total caffeine including future drinks
+            const totalData = hours.map(hour => {
+                const time = new Date(minTime.getTime() + hour * 60 * 60 * 1000);
+                // Sum up raw contributions then round the final total for this hour
+                const rawSum = relevantDrinks.reduce((total, drink) => {
+                    if (time < drink.timestamp) return total; // Ignore future drinks
+                    const elapsed = time - drink.timestamp;
+                    const halfLives = elapsed / (5 * 60 * 60 * 1000);
+                    const contribution = drink.caffeine * Math.pow(0.5, halfLives);
+                    return total + contribution;
+                }, 0);
+                return Math.round(rawSum);
+            });
+
+            // Create individual drink datasets with consistent calculation
+            const drinkDatasets = relevantDrinks.map((drink, index) => ({
+                label: `${drink.name} (${drink.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})})`,
+                data: hours.map(hour => {
+                    const time = new Date(minTime.getTime() + hour * 60 * 60 * 1000);
+                    if (time < drink.timestamp) return 0; // Ignore future drinks
+                    const elapsed = time - drink.timestamp;
+                    const halfLives = elapsed / (5 * 60 * 60 * 1000);
+                    return drink.caffeine * Math.pow(0.5, halfLives);
+                }),
+                borderWidth: 1,
+                borderColor: `hsl(${(index * 60 + 200) % 360}, 70%, 50%)`,
+                fill: false
+            }));
+
+            // When creating chart with drinks, use baseDatasets
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        ...baseDatasets.map((dataset, index) => ({
+                            ...dataset,
+                            data: index === 0 ? totalData : dataset.data,
+                            yAxisID: index > 0 ? 'y2' : undefined
+                        })),
+                        // Individual drinks last
+                        ...drinkDatasets
+                    ]
+                },
+                options: getChartOptions()
+            });
+            generateCustomLegends(chart);
+        }
+
+        function updateDisplay() {
+            const now = new Date();
+            const startOfToday = getStartOfToday();
+            const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+            
+            // Calculate total consumed
+            const totalConsumed = drinks
+                .filter(drink => drink.timestamp >= startOfToday && drink.timestamp < endOfToday)
+                .reduce((sum, drink) => sum + (isNaN(drink.caffeine) ? 0 : drink.caffeine), 0);
+            
+            // Calculate remaining caffeine
+            const remaining = calculateCurrentCaffeine();
+            
+            // Calculate caffeine at sleep time
+            let sleepTimeCaffeine = 0;
+            let hoursUntilSleep = 0;
+            
+            if (plannedSleepTime) {
+                const HALF_LIFE = 5 * 60 * 60 * 1000;
+                hoursUntilSleep = (plannedSleepTime - now) / (1000 * 60 * 60);
+                
+                sleepTimeCaffeine = drinks
+                    .filter(drink => 
+                        drink.timestamp >= startOfToday && 
+                        drink.timestamp <= plannedSleepTime && 
+                        drink.timestamp < endOfToday
+                    )
+                    .reduce((total, drink) => {
+                        if (isNaN(drink.caffeine)) return total; // Skip invalid values
+                        const elapsed = plannedSleepTime - drink.timestamp;
+                        const halfLives = elapsed / HALF_LIFE;
+                        const remainingCaffeine = drink.caffeine * Math.pow(0.5, halfLives);
+                        return total + remainingCaffeine;
+                    }, 0);
+            }
+            
+            sleepTimeCaffeine = Math.round(sleepTimeCaffeine) || 0; // Return 0 if NaN
+
+            // Update display elements
+            document.getElementById('totalConsumed').textContent = totalConsumed || 0;
+            document.getElementById('remainingCaffeine').textContent = remaining || 0;
+            document.getElementById('sleepTimeCaffeine').textContent = sleepTimeCaffeine || 0;
+            
+            // Format current time
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+            
+            // Format sleep time
+            if (plannedSleepTime) {
+                const sleepHours = String(plannedSleepTime.getHours()).padStart(2, '0');
+                const sleepMinutes = String(plannedSleepTime.getMinutes()).padStart(2, '0');
+                document.getElementById('sleepTimeDisplay').textContent = `${sleepHours}:${minutes}`;
+            } else {
+                document.getElementById('sleepTimeDisplay').textContent = '--:--';
+            }
+            
+            // Remove all classes
+            document.getElementById('totalConsumed').classList.remove('very-safe', 'safe', 'warning', 'danger');
+            document.getElementById('remainingCaffeine').classList.remove('very-safe', 'safe', 'warning', 'danger');
+            document.getElementById('sleepTimeCaffeine').classList.remove('very-safe', 'safe', 'warning', 'danger');
+            
+            const warningMessage = document.getElementById('warningMessage');
+            warningMessage.classList.remove('very-safe', 'safe', 'warning', 'danger');
+            
+            // Determine status classes
+            const totalStatus = getTotalStatus(totalConsumed);
+            const remainingStatus = getRemainingStatus(remaining);
+            const sleepStatus = getSleepTimeStatus(sleepTimeCaffeine);
+            
+            // Apply status classes
+            document.getElementById('totalConsumed').classList.add(totalStatus);
+            document.getElementById('remainingCaffeine').classList.add(remainingStatus);
+            document.getElementById('sleepTimeCaffeine').classList.add(sleepStatus);
+            
+            // Update warning message based on most severe status
+            const { statusClass, warningText } = getWarningMessage(remaining, sleepTimeCaffeine, hoursUntilSleep);
+            warningMessage.classList.add(statusClass);
+            warningMessage.textContent = warningText;
+            warningMessage.style.display = 'block';
+        }
+
+        // Add these helper functions
+        function getTotalStatus(total) {
+            if (total > DAILY_LIMIT) return 'danger';
+            if (total > DAILY_LIMIT * 0.75) return 'warning';
+            if (total > DAILY_LIMIT * 0.5) return 'safe';
+            return 'very-safe';
+        }
+
+        function getRemainingStatus(remaining) {
+            if (remaining > DAILY_LIMIT) return 'danger';
+            if (remaining > DAILY_LIMIT * 0.75) return 'warning';
+            if (remaining > DAILY_LIMIT * 0.5) return 'safe';
+            return 'very-safe';
+        }
+
+        function getSleepTimeStatus(caffeine) {
+            if (caffeine > 100) return 'danger';
+            if (caffeine > 50) return 'warning';
+            if (caffeine > 25) return 'safe';
+            return 'very-safe';
+        }
+
+        function getWarningMessage(remaining, sleepTimeCaffeine, hoursUntilSleep) {
+            if (remaining > DAILY_LIMIT) {
+                return {
+                    statusClass: 'danger',
+                    warningText: 'Warning: You have exceeded the recommended daily caffeine limit!'
+                };
+            }
+            if (remaining > DAILY_LIMIT * 0.75) {
+                return {
+                    statusClass: 'danger',
+                    warningText: 'Caution: You are approaching the recommended daily caffeine limit.'
+                };
+            }
+            if (hoursUntilSleep < 6 && sleepTimeCaffeine > 50) {
+                return {
+                    statusClass: 'warning',
+                    warningText: `Note: Caffeine levels (${Math.round(sleepTimeCaffeine)}mg) may disrupt sleep in ${Math.round(hoursUntilSleep)} hours.`
+                };
+            }
+            if (hoursUntilSleep < 8 && sleepTimeCaffeine > 100) {
+                return {
+                    statusClass: 'safe',
+                    warningText: `Note: Consider your ${Math.round(hoursUntilSleep)}-hour window before sleep. Predicted level: ${Math.round(sleepTimeCaffeine)}mg`
+                };
+            }
+            return {
+                statusClass: 'very-safe',
+                warningText: `Caffeine levels will be sleep-safe (${Math.round(sleepTimeCaffeine)}mg) at bedtime.`
+            };
+        }
+
+        function resetCalculator() {
+            drinks = [];
+            updateDisplay();
+            updateDrinkHistory();
+            updateChart();
+        }
+
+        function getChartOptions() {
+            const sleepTimeStr = plannedSleepTime ? 
+                plannedSleepTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : null;
+
+            return {
+                scales: {
+                    y: {
+                        position: 'left',
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Caffeine (mg)'
+                        },
+                        min: 0,
+                        max: 1000,
+                        grid: {
+                            display: true
+                        }
+                    },
+                    y2: {
+                        position: 'right',
+                        min: 0,
+                        max: 1000,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            autoSkip: true,
+                            maxTicksLimit: 12
+                        },
+                        grid: {
+                            display: true,
+                            color: (context) => {
+                                if (sleepTimeStr && context.tick.label === sleepTimeStr) {
+                                    return '#e11d48';
+                                }
+                                return '#e2e8f0';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${Math.round(context.raw)}mg`;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    annotation: {
+                        annotations: {
+                            sleepLine: sleepTimeStr ? {
+                                type: 'line',
+                                xMin: sleepTimeStr,
+                                xMax: sleepTimeStr,
+                                borderColor: '#e11d48',
+                                borderWidth: 2,
+                                label: {
+                                    content: 'Sleep Time',
+                                    enabled: true,
+                                    position: 'top'
+                                }
+                            } : undefined,
+                            sleepSafeZone: {
+                                type: 'box',
+                                xMin: sleepTimeStr,
+                                yMin: 0,
+                                yMax: 50,
+                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                borderColor: 'rgba(34, 197, 94, 0.5)',
+                                label: {
+                                    content: 'Sleep-Safe Zone (<50mg)',
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                },
+                maintainAspectRatio: false,
+                responsive: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            };
+        }
+
+        // Initialize empty chart
+        updateChart();
+
+        // Update display every minute to account for metabolism
+        setInterval(updateDisplay, 60000);
+
+        // Add custom legend functions
+        function toggleDataset(index) {
+            chart.setDatasetVisibility(index, !chart.isDatasetVisible(index));
+            chart.update();
+            generateCustomLegends(chart);
+        }
+
+        function generateCustomLegends(chart) {
+            const fixedLegendContainer = document.getElementById('fixedLegend');
+            const drinksLegendContainer = document.getElementById('drinksLegend');
+            fixedLegendContainer.innerHTML = '';
+            drinksLegendContainer.innerHTML = '';
+
+            // Fixed datasets: first 4 (metrics & reference levels)
+            let fixedHTML = '<h4>Metrics & Reference Levels</h4><ul>';
+            chart.data.datasets.slice(0, 4).forEach((dataset, idx) => {
+                const isHidden = !chart.isDatasetVisible(idx);
+                fixedHTML += `<li style="display:inline-block;margin-right:10px;cursor:pointer;" onclick="toggleDataset(${idx})">
+                    <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
+                    ${dataset.label}
+                </li>`;
+            });
+            fixedHTML += '</ul>';
+            fixedLegendContainer.innerHTML = fixedHTML;
+
+            // Individual drinks: datasets after index 4
+            let drinksHTML = '<h4>Individual Drinks</h4><ul>';
+            if (chart.data.datasets.length > 4) {
+                chart.data.datasets.slice(4).forEach((dataset, idx) => {
+                    const isHidden = !chart.isDatasetVisible(idx + 4);
+                    drinksHTML += `<li style="display:inline-block;margin-right:10px;cursor:pointer;" onclick="toggleDataset(${idx + 4})">
+                        <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
+                        ${dataset.label}
+                    </li>`;
+                });
+            } else {
+                drinksHTML += `<li style="color: #64748b;">
+                    <span class="color-dot" style="background-color: #94a3b8;"></span>
+                    No drinks added yet
+                </li>`;
+            }
+            drinksHTML += '</ul>';
+            drinksLegendContainer.innerHTML = drinksHTML;
+        }
+
+        // Initialize the time inputs when page loads
+        setupTimeInputs();
+        setupSleepTimeInput();
+
+        // Add this function to setup sleep time options
+        function setupSleepTimeInput() {
+            const sleepSelect = document.getElementById('sleepTime');
+            sleepSelect.innerHTML = '';
+            
+            const now = new Date();
+            const currentHour = now.getHours();
+            
+            // Add options for next 24 hours
+            for (let i = 0; i < 24; i++) {
+                const hour = (currentHour + i) % 24;
+                const option = document.createElement('option');
+                option.value = hour;
+                const displayHour = hour % 12 || 12;
+                const ampm = hour < 12 ? 'AM' : 'PM';
+                option.textContent = `${displayHour}:00 ${ampm}`;
+                sleepSelect.appendChild(option);
+            }
+            
+            // Set default to 10 PM if current time is before 10 PM, otherwise set to 10 PM tomorrow
+            const defaultSleepHour = 22; // 10 PM
+            if (currentHour < defaultSleepHour) {
+                sleepSelect.value = defaultSleepHour;
+            } else {
+                sleepSelect.value = defaultSleepHour;
+            }
+            
+            // Update planned sleep time when selection changes
+            sleepSelect.addEventListener('change', () => {
+                const selectedHour = parseInt(sleepSelect.value);
+                plannedSleepTime = new Date();
+                plannedSleepTime.setHours(selectedHour, 0, 0, 0);
+                if (plannedSleepTime < new Date()) {
+                    plannedSleepTime.setDate(plannedSleepTime.getDate() + 1);
+                }
+                updateDisplay();
+                updateChart();
+            });
+            
+            // Set initial sleep time
+            sleepSelect.dispatchEvent(new Event('change'));
+        }
+
+        // Add some CSS for the new time selects
+        const style = document.createElement('style');
+        style.textContent = `
+            .input-group select {
+                margin-bottom: 8px;
+            }
+            
+            #drinkTimeDay,
+            #drinkTimeHour {
+                width: 100%;
+            }
+            
+            @media (min-width: 768px) {
+                .time-selects {
+                    display: flex;
+                    gap: 8px;
+                }
+                
+                #drinkTimeDay,
+                #drinkTimeHour {
+                    flex: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html> 
