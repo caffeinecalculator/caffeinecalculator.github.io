@@ -236,10 +236,19 @@
         .custom-input {
             display: none;
             margin-top: 10px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .custom-input.visible {
             display: block;
+            width: 100%;
+        }
+        
+        .custom-input input {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
         }
 
         button {
@@ -839,8 +848,7 @@
                        min="1" 
                        max="500" 
                        class="tooltip" 
-                       data-tooltip="Enter caffeine content in mg"
-                       style="width: 100%;">
+                       data-tooltip="Enter caffeine content in mg">
             </div>
 
             <div class="button-group">
@@ -1419,7 +1427,12 @@
                             maxRotation: 45,
                             minRotation: 45,
                             autoSkip: true,
-                            maxTicksLimit: window.innerWidth < 480 ? 6 : 12
+                            maxTicksLimit: window.innerWidth < 480 ? 6 : 
+                                          (window.innerWidth < 768 ? 8 : 12),
+                            font: {
+                                size: window.innerWidth < 360 ? 8 : 
+                                     (window.innerWidth < 480 ? 10 : 12)
+                            }
                         },
                         grid: {
                             display: true,
