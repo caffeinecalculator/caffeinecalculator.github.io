@@ -71,6 +71,9 @@
             
             .container {
                 padding: 15px;
+                box-sizing: border-box;
+                max-width: 100%;
+                overflow-x: hidden;
             }
             
             h1 {
@@ -83,6 +86,10 @@
             
             .drink-input .button-group {
                 flex-direction: column;
+            }
+            
+            .drink-input .input-row {
+                grid-template-columns: 1fr; /* Force single column on small screens */
             }
             
             .input-group select,
@@ -125,10 +132,11 @@
 
         .drink-input .input-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
             width: 100%;
             max-width: 100%;
+            box-sizing: border-box;
         }
 
         /* Add styles to control button placement */
@@ -516,6 +524,11 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        
         /* Add new extra-small screen media query for extremely small devices */
         @media (max-width: 360px) {
             body {
@@ -549,14 +562,29 @@
                 padding: 8px 12px;
                 font-size: 0.85rem;
             }
-        }
-            width: 100%;
+            
+            .time-selects {
+                flex-basis: 100%;
+            }
+            
+            .input-group.time-group {
+                min-width: 100%;
+            }
         }
         
         #drinkTimeDay,
         #drinkTimeHour {
             width: 100%;
             box-sizing: border-box;
+            min-width: 0;
+            max-width: 100%;
+        }
+        
+        /* Make the parent containers constrain properly */
+        .input-group.time-group {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
         }
         
         @media (min-width: 768px) {
