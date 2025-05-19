@@ -5,546 +5,605 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caffeine Intake Calculator</title>
     <style>
+        /* Mobile-First CSS - Complete Rewrite */
+        /* Base Styles - Mobile First */
+        :root {
+            --color-bg: #f8fafc;
+            --color-text: #334155;
+            --color-text-muted: #64748b;
+            --color-text-dark: #1e293b;
+            --color-border: #e2e8f0;
+            --color-white: #ffffff;
+            --color-primary: #2563eb;
+            --color-primary-dark: #1d4ed8;
+            --color-success: #059669;
+            --color-success-dark: #047857;
+            --color-success-bg: #dcfce7;
+            --color-success-text: #166534;
+            --color-warning-bg: #fef9c3;
+            --color-warning-text: #854d0e;
+            --color-danger: #ef4444;
+            --color-danger-dark: #dc2626;
+            --color-danger-bg: #fee2e2;
+            --color-danger-text: #991b1b;
+            --color-info-bg: #dbeafe;
+            --color-info-text: #1e40af;
+            --color-neutral: #64748b;
+            --color-neutral-dark: #475569;
+            --color-neutral-light: #94a3b8;
+            
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-xl: 12px;
+            
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 24px;
+            
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem; 
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1);
+            
+            --touch-target-size: 44px;
+        }
+        
+        /* Reset & Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            max-width: 1200px;  /* Reduce from 90% to fixed width */
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            padding: 10px;
+            width: 100%;
+            max-width: 100%;
             min-width: 320px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f8fafc;
-            color: #334155;
+            overflow-x: hidden;
         }
-
+        
+        /* Main Container */
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: grid;
-            gap: 20px;
-            grid-template-columns: 1fr;  /* Default for mobile */
-            grid-template-areas: 
-                "header"
-                "input"
-                "result"
-                "timeline"
-                "reset";
-            max-width: 100%;  /* Ensure container doesn't overflow body */
+            background-color: var(--color-white);
+            padding: 16px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
-            box-sizing: border-box;  /* Include padding in width calculation */
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-
-        @media (min-width: 1024px) {
+        
+        /* Typography */
+        h1 {
+            text-align: center;
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+            color: var(--color-text-dark);
+        }
+        
+        h3 {
+            color: var(--color-text-dark);
+            margin-top: 0;
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-md);
+        }
+        
+        h4 {
+            margin: 0 0 var(--space-sm) 0;
+            color: var(--color-text-dark);
+            font-size: var(--font-size-base);
+        }
+        
+        /* Card Components */
+        .card {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            width: 100%;
+        }
+        
+        /* Section-specific styles */
+        .drink-input {
+            background-color: var(--color-white);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .result {
+            background-color: var(--color-bg);
+        }
+        
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            min-height: auto;
+        }
+        
+        /* Form Controls - Mobile Optimized */
+        .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            width: 100%;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            width: 100%;
+        }
+        
+        .input-group label {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--color-text-muted);
+        }
+        
+        .input-group select,
+        .input-group input[type="number"] {
+            padding: 12px var(--space-md); /* Larger tap targets */
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            width: 100%;
+            min-height: var(--touch-target-size);
+            background-color: var(--color-white);
+            color: var(--color-text-dark);
+            -webkit-appearance: none; /* Remove default styling on iOS */
+        }
+        
+        /* Hide number input spinners */
+        .input-group input[type="number"]::-webkit-inner-spin-button,
+        .input-group input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .input-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        /* Select dropdown styling for better mobile experience */
+        .input-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+        
+        .input-group select:focus,
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+        
+        .time-selects {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            width: 100%;
+        }
+        
+        /* Custom input visibility */
+        .custom-input {
+            display: none;
+            margin-top: var(--space-sm);
+        }
+        
+        .custom-input.visible {
+            display: block;
+        }
+        
+        /* Button Styles */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+            width: 100%;
+        }
+        
+        button {
+            padding: 12px var(--space-md);
+            min-height: var(--touch-target-size);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        /* Button color variants */
+        button.primary {
+            background-color: var(--color-primary);
+        }
+        
+        button.primary:hover {
+            background-color: var(--color-primary-dark);
+        }
+        
+        button.success {
+            background-color: var(--color-success);
+        }
+        
+        button.success:hover {
+            background-color: var(--color-success-dark);
+        }
+        
+        button.neutral {
+            background-color: var(--color-neutral);
+        }
+        
+        button.neutral:hover {
+            background-color: var(--color-neutral-dark);
+        }
+        
+        button.danger {
+            background-color: var(--color-danger);
+        }
+        
+        button.danger:hover {
+            background-color: var(--color-danger-dark);
+        }
+        
+        button.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        /* Results Display */
+        .result p {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+            font-size: var(--font-size-base);
+        }
+        
+        .caffeine-total {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            margin-top: var(--space-xs);
+            transition: all 0.2s ease;
+        }
+        
+        .caffeine-total.very-safe {
+            background-color: var(--color-success-bg);
+            color: var(--color-success-text);
+        }
+        
+        .caffeine-total.safe {
+            background-color: var(--color-info-bg);
+            color: var(--color-info-text);
+        }
+        
+        .caffeine-total.warning {
+            background-color: var(--color-warning-bg);
+            color: var(--color-warning-text);
+        }
+        
+        .caffeine-total.danger {
+            background-color: var(--color-danger-bg);
+            color: var(--color-danger-text);
+        }
+        
+        .warning {
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-md);
+            font-weight: 500;
+            width: 100%;
+        }
+        
+        .warning.very-safe {
+            background-color: var(--color-success-bg);
+            color: var(--color-success-text);
+        }
+        
+        .warning.safe {
+            background-color: var(--color-info-bg);
+            color: var(--color-info-text);
+        }
+        
+        .warning.warning {
+            background-color: var(--color-warning-bg);
+            color: var(--color-warning-text);
+        }
+        
+        .warning.danger {
+            background-color: var(--color-danger-bg);
+            color: var(--color-danger-text);
+        }
+        
+        /* Chart styling */
+        .chart-container {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            margin-bottom: var(--space-md);
+            aspect-ratio: 16/9;
+        }
+        
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 100%;
+        }
+        
+        /* Custom Legend */
+        .custom-legend {
+            padding: var(--space-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background-color: var(--color-bg);
+            margin-bottom: var(--space-md);
+            width: 100%;
+        }
+        
+        .custom-legend ul {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        
+        .custom-legend li {
+            display: flex;
+            align-items: center;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            font-size: var(--font-size-sm);
+            width: 100%;
+        }
+        
+        .custom-legend li:hover {
+            background-color: var(--color-border);
+        }
+        
+        .custom-legend .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: var(--space-sm);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        .custom-legend .dataset-hidden {
+            opacity: 0.5;
+        }
+        
+        /* Drink entries */
+        .drink-history {
+            border-top: 1px solid var(--color-border);
+            padding-top: var(--space-lg);
+            width: 100%;
+        }
+        
+        .drink-entry {
+            display: flex;
+            flex-direction: column;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            margin-bottom: var(--space-sm);
+            background-color: var(--color-white);
+            width: 100%;
+        }
+        
+        .drink-entry span {
+            margin-bottom: var(--space-sm);
+            word-break: break-word;
+        }
+        
+        .drink-entry button {
+            align-self: flex-end;
+            width: auto;
+            padding: 8px var(--space-md);
+            min-height: 38px;
+            font-size: var(--font-size-sm);
+        }
+        
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 5px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: var(--space-xs) var(--space-sm);
+            background-color: var(--color-text-dark);
+            color: var(--color-white);
+            font-size: var(--font-size-xs);
+            border-radius: var(--radius-sm);
+            z-index: 10;
+            width: auto;
+            max-width: 200px;
+            text-align: center;
+            white-space: normal;
+        }
+        
+        /* Footer styles */
+        .footer {
+            text-align: center;
+            margin-top: var(--space-lg);
+            padding: var(--space-md);
+            color: var(--color-text-muted);
+            font-size: var(--font-size-sm);
+        }
+        
+        .footer a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+        
+        /* Desktop enhancements */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
             .container {
+                padding: 24px;
+                gap: 24px;
+                max-width: 90%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: var(--space-xl);
+            }
+            
+            .input-row {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .input-group {
+                flex: 1;
+                min-width: 200px;
+            }
+            
+            .time-selects {
+                flex-direction: row;
+            }
+            
+            .button-group {
+                flex-direction: row;
+            }
+            
+            .result p {
+                flex-direction: row;
+                align-items: center;
+                gap: var(--space-sm);
+            }
+            
+            .caffeine-total {
+                font-size: var(--font-size-lg);
+                margin-top: 0;
+            }
+            
+            .drink-entry {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .drink-entry span {
+                margin-bottom: 0;
+            }
+            
+            .custom-legend ul {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .custom-legend li {
+                width: auto;
+            }
+            
+            .chart-container {
+                height: 350px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                max-width: 1200px;
+            }
+            
+            .container {
+                display: grid;
                 grid-template-columns: 1fr 1fr;
                 grid-template-areas: 
                     "header header"
                     "input result"
                     "timeline timeline"
                     "reset reset";
-            }
-        }
-
-        @media (min-width: 1440px) {
-            body {
-                max-width: 1400px;  /* Maximum width for very large screens */
-            }
-        }
-
-        @media (max-width: 1240px) {  /* Account for body padding */
-            body {
-                max-width: 90%;
-            }
-        }
-        
-        /* Additional mobile optimizations */
-        @media (max-width: 480px) {
-            body {
-                padding: 10px; /* Reduce body padding */
-            }
-            
-            .container {
-                padding: 15px; /* Reduce container padding */
-                gap: 15px; /* Smaller gap between elements */
+                gap: 30px;
             }
             
             h1 {
-                font-size: 1.5rem; /* Smaller heading on mobile */
-                margin-bottom: 1rem;
-            }
-        }
-
-        .drink-input {
-            grid-area: input;
-            margin-bottom: 0;
-            padding: 24px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .drink-input .input-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        /* Optimize input rows on very small screens */
-        @media (max-width: 480px) {
-            .drink-input .input-row {
-                grid-template-columns: 1fr; /* Single column on very small screens */
+                grid-area: header;
             }
             
-            .input-group {
-                margin-bottom: 5px; /* Add some spacing between inputs */
+            .drink-input {
+                grid-area: input;
             }
-        }
-
-        /* Add styles to control button placement */
-        .drink-input .button-group {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .drink-input .button-group button {
-            flex: 1;
-            min-width: 0; /* Remove min-width to prevent overflow */
-        }
-        
-        /* Stack buttons on small screens */
-        @media (max-width: 480px) {
-            .drink-input .button-group {
-                flex-direction: column;
-            }
-        }
-
-        h1 {
-            grid-area: header;
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: #1e293b;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            width: 100%;
-        }
-
-        .input-group label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-
-        .input-group select,
-        .input-group input[type="number"] {
-            padding: 10px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.15s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .input-group select:focus,
-        .input-group input[type="number"]:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        /* Hide number input spinners but keep consistent styling */
-        .input-group input[type="number"]::-webkit-inner-spin-button,
-        .input-group input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .input-group input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        .custom-input {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .custom-input.visible {
-            display: block;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-
-        button:hover {
-            background-color: #1d4ed8;
-        }
-
-        .drink-input button {
-            background-color: #059669;
-        }
-
-        .drink-input button:hover {
-            background-color: #047857;
-        }
-
-        .drink-input .reset-button {
-            background-color: #64748b;
-        }
-
-        .drink-input .reset-button:hover {
-            background-color: #475569;
-        }
-
-        .result {
-            grid-area: result;
-            padding: 24px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
-        }
-
-        .result h3 {
-            color: #1e293b;
-            margin-top: 0;
-            font-size: 1.25rem;
-        }
-
-        .drink-history {
-            height: auto;  /* Remove fixed height */
-            min-height: 100px;  /* Add min-height for initial state */
-            overflow-y: visible;  /* Remove scrollbar */
-            border-top: 1px solid #e2e8f0;
-            padding-top: 16px;
-        }
-
-        .drink-history h4 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 5px 0;
-        }
-
-        .warning {
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-top: 12px;
-            font-weight: 500;
-        }
-
-        .warning.very-safe {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .warning.safe {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .warning.warning {
-            background-color: #fef9c3;
-            color: #854d0e;
-        }
-
-        .warning.danger {
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
-
-        .timeline {
-            grid-area: timeline;
-            margin-top: 20px;
-            padding: 24px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            height: auto;  /* Remove fixed height */
-            min-height: 600px;  /* Use min-height instead */
-            display: flex;
-            flex-direction: column;
-            width: 100%;  /* Ensure full width */
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .chart-container {
-            flex: 1;
-            min-height: 300px;  /* Keep minimum height */
-            position: relative;
-            margin-bottom: 15px;
-            width: 100%;  /* Ensure full width */
-            max-width: 100%;
-            box-sizing: border-box;
-            aspect-ratio: 16/9;  /* Maintain aspect ratio */
-        }
-
-        canvas {
-            width: 100% !important;
-            height: auto !important;  /* Allow height to adjust */
-            aspect-ratio: 16/9;  /* Maintain aspect ratio */
-        }
-        
-        /* Adjust chart container on mobile */
-        @media (max-width: 480px) {
-            .chart-container {
-                min-height: 250px; /* Slightly smaller on mobile */
+            
+            .result {
+                grid-area: result;
             }
             
             .timeline {
-                padding: 15px; /* Less padding on mobile */
-                min-height: 500px; /* Smaller min-height */
-            }
-        }
-
-        .drink-entry {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: background-color 0.15s ease;
-            max-width: 100%;
-            box-sizing: border-box;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-            gap: 8px; /* Add gap between content and button */
-        }
-        
-        @media (max-width: 480px) {
-            .drink-entry {
-                flex-direction: column; /* Stack content on small screens */
-                align-items: flex-start;
+                grid-area: timeline;
+                min-height: 600px;
             }
             
-            .drink-entry button {
-                align-self: flex-end;
-                margin-top: 5px; /* Add space between text and button */
-            }
-        }
-
-        .drink-entry:hover {
-            background-color: #f8fafc;
-        }
-
-        .drink-entry button {
-            background-color: #ef4444;
-            padding: 6px 12px;
-            font-size: 0.875rem;
-        }
-
-        .drink-entry button:hover {
-            background-color: #dc2626;
-        }
-
-        .reset-button {
-            grid-area: reset;
-            justify-self: center;
-            width: 200px;
-            background-color: #64748b;
-        }
-
-        .reset-button:hover {
-            background-color: #475569;
-        }
-
-        /* Add styles for time input */
-        input[type="datetime-local"] {
-            padding: 10px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-family: inherit;
-        }
-
-        /* Add loading state for buttons */
-        button.loading {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        /* Add tooltip styles */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 6px 10px;
-            background-color: #1e293b;
-            color: white;
-            font-size: 0.875rem;
-            border-radius: 4px;
-            white-space: nowrap;
-            z-index: 10;
-        }
-
-        /* Add new styles */
-        .caffeine-total {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1.25rem;
-            transition: all 0.2s ease;
-        }
-
-        .caffeine-total.very-safe {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .caffeine-total.safe {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .caffeine-total.warning {
-            background-color: #fef9c3;
-            color: #854d0e;
-        }
-
-        .caffeine-total.danger {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .result p {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-        }
-        
-        /* Adjust caffeine total display on mobile */
-        @media (max-width: 480px) {
-            .caffeine-total {
-                font-size: 1rem; /* Smaller font size on mobile */
-                padding: 6px 12px; /* Smaller padding */
+            .reset-button {
+                grid-area: reset;
+                justify-self: center;
+                width: 200px;
             }
             
-            .result p {
-                margin: 10px 0; /* Add some vertical spacing */
-            }
-        }
-
-        .custom-legend {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            background-color: #f8fafc;
-            margin-bottom: 10px;
-            max-width: 100%;
-            box-sizing: border-box;
-            overflow-x: visible;  /* Remove scrollbar */
-        }
-
-        .custom-legend h4 {
-            margin: 0 0 8px 0;
-            color: #1e293b;
-            font-size: 0.95rem;
-        }
-
-        .custom-legend ul {
-            display: flex;
-            flex-wrap: wrap;  /* Ensure items wrap to next line */
-            gap: 12px;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            width: 100%;  /* Take full width */
-        }
-
-        .custom-legend li {
-            display: flex;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-            font-size: 0.9rem; /* Slightly smaller font for legend items */
-            word-break: break-word; /* Allow breaking long words */
-        }
-        
-        /* Adjust legend items on small screens */
-        @media (max-width: 480px) {
-            .custom-legend li {
-                font-size: 0.8rem; /* Even smaller font on mobile */
-                padding: 3px 6px;
-                flex-basis: 100%; /* Full width on small screens */
-            }
-        }
-
-        .custom-legend li:hover {
-            background-color: #e2e8f0;
-        }
-
-        .custom-legend .color-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 6px;
-            display: inline-block;
-        }
-
-        .custom-legend .dataset-hidden {
-            opacity: 0.5;
-        }
-
-        .input-group select {
-            margin-bottom: 8px;
-        }
-        
-        #drinkTimeDay,
-        #drinkTimeHour {
-            width: 100%;
-        }
-        
-        @media (min-width: 768px) {
-            .time-selects {
-                display: flex;
-                gap: 8px;
-            }
-            
-            #drinkTimeDay,
-            #drinkTimeHour {
-                flex: 1;
+            .chart-container {
+                height: 400px;
             }
         }
         
-        /* Additional styling for time selects on mobile */
-        @media (max-width: 767px) {
-            #drinkTimeDay {
-                margin-bottom: 8px; /* Add space between selects when stacked */
-            }
-            
-            .time-selects {
-                display: flex;
-                flex-direction: column;
+        @media (min-width: 1440px) {
+            body {
+                max-width: 1400px;
             }
         }
     </style>
@@ -553,7 +612,7 @@
     <div class="container">
         <h1>Caffeine Intake Calculator</h1>
         
-        <div class="drink-input">
+        <div class="drink-input card">
             <div class="input-row">
                 <div class="input-group">
                     <label for="drinkType">Drink Type</label>
@@ -601,15 +660,17 @@
                     </select>
                 </div>
             
-                <div class="input-group time-group">
-                    <label for="drinkTime">Time Consumed</label>
-                    <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
-                        <option value="0">Today</option>
-                        <option value="1">Tomorrow</option>
-                    </select>
-                    <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
-                        <!-- Will be populated by JavaScript -->
-                    </select>
+                <div class="input-group">
+                    <label for="drinkTimeDay">Time Consumed</label>
+                    <div class="time-selects">
+                        <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
+                            <option value="0">Today</option>
+                            <option value="1">Tomorrow</option>
+                        </select>
+                        <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -620,9 +681,7 @@
                         <!-- Will be populated by JavaScript -->
                     </select>
                 </div>
-            </div>
 
-            <div class="input-row">
                 <div class="input-group">
                     <label for="quantity">Number of Drinks</label>
                     <select id="quantity" class="tooltip" data-tooltip="How many drinks?">
@@ -648,21 +707,20 @@
                        min="1" 
                        max="500" 
                        class="tooltip" 
-                       data-tooltip="Enter caffeine content in mg"
-                       style="width: 100%;">
+                       data-tooltip="Enter caffeine content in mg">
             </div>
 
             <div class="button-group">
-                <button onclick="addDrink()" class="tooltip" data-tooltip="Add this drink to your timeline">
+                <button onclick="addDrink()" class="success tooltip" data-tooltip="Add this drink to your timeline">
                     Add Drink
                 </button>
-                <button onclick="resetCalculator()" class="reset-button tooltip" data-tooltip="Clear all drinks and start over">
+                <button onclick="resetCalculator()" class="neutral tooltip" data-tooltip="Clear all drinks and start over">
                     Reset Calculator
                 </button>
             </div>
         </div>
 
-        <div class="result">
+        <div class="result card">
             <h3>Today's Caffeine Intake</h3>
             <p>Consumed: <span id="totalConsumed" class="caffeine-total safe">0</span> mg</p>
             <p>Remaining (as of <span id="currentTime">--:--</span>): <span id="remainingCaffeine" class="caffeine-total safe">0</span> mg</p>
@@ -670,7 +728,7 @@
             <p id="warningMessage" class="warning"></p>
         </div>
 
-        <div class="timeline">
+        <div class="timeline card">
             <h3>Caffeine Timeline</h3>
             <div class="chart-container">
                 <canvas id="caffeineChart"></canvas>
@@ -683,9 +741,9 @@
         </div>
     </div>
 
-    <!-- Add footnote before closing body tag -->
-    <div style="text-align: center; margin-top: 20px; padding: 10px; color: #64748b; font-size: 0.875rem;">
-        Source code available on <a href="https://github.com/caffeinecalculator/caffeinecalculator.github.io" style="color: #3b82f6; text-decoration: none;">GitHub</a>
+    <!-- Footer with GitHub link -->
+    <div class="footer">
+        Source code available on <a href="https://github.com/caffeinecalculator/caffeinecalculator.github.io">GitHub</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -888,7 +946,7 @@
                 const timeStr = drink.timestamp.toLocaleString();
                 entry.innerHTML = `
                     <span>${timeStr}: ${drink.quantity}x ${drink.name}</span>
-                    <button onclick="removeDrink(${drink.id})">Remove</button>
+                    <button onclick="removeDrink(${drink.id})" class="danger">Remove</button>
                 `;
                 history.appendChild(entry);
             });
@@ -1388,31 +1446,54 @@
             sleepSelect.dispatchEvent(new Event('change'));
         }
 
-        // Add some CSS for the new time selects
-        const style = document.createElement('style');
-        style.textContent = `
-            .input-group select {
-                margin-bottom: 8px;
+        // Remove style addition that's now part of the core CSS
+        // Add custom legend functions
+        function toggleDataset(index) {
+            chart.setDatasetVisibility(index, !chart.isDatasetVisible(index));
+            chart.update();
+            generateCustomLegends(chart);
+        }
+
+        function generateCustomLegends(chart) {
+            const fixedLegendContainer = document.getElementById('fixedLegend');
+            const drinksLegendContainer = document.getElementById('drinksLegend');
+            fixedLegendContainer.innerHTML = '';
+            drinksLegendContainer.innerHTML = '';
+
+            // Fixed datasets: first 4 (metrics & reference levels)
+            let fixedHTML = '<h4>Metrics & Reference Levels</h4><ul>';
+            chart.data.datasets.slice(0, 4).forEach((dataset, idx) => {
+                const isHidden = !chart.isDatasetVisible(idx);
+                fixedHTML += `<li onclick="toggleDataset(${idx})">
+                    <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
+                    ${dataset.label}
+                </li>`;
+            });
+            fixedHTML += '</ul>';
+            fixedLegendContainer.innerHTML = fixedHTML;
+
+            // Individual drinks: datasets after index 4
+            let drinksHTML = '<h4>Individual Drinks</h4><ul>';
+            if (chart.data.datasets.length > 4) {
+                chart.data.datasets.slice(4).forEach((dataset, idx) => {
+                    const isHidden = !chart.isDatasetVisible(idx + 4);
+                    drinksHTML += `<li onclick="toggleDataset(${idx + 4})">
+                        <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
+                        ${dataset.label}
+                    </li>`;
+                });
+            } else {
+                drinksHTML += `<li>
+                    <span class="color-dot" style="background-color: var(--color-neutral-light);"></span>
+                    No drinks added yet
+                </li>`;
             }
-            
-            #drinkTimeDay,
-            #drinkTimeHour {
-                width: 100%;
-            }
-            
-            @media (min-width: 768px) {
-                .time-selects {
-                    display: flex;
-                    gap: 8px;
-                }
-                
-                #drinkTimeDay,
-                #drinkTimeHour {
-                    flex: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+            drinksHTML += '</ul>';
+            drinksLegendContainer.innerHTML = drinksHTML;
+        }
+
+        // Initialize the time inputs when page loads
+        setupTimeInputs();
+        setupSleepTimeInput();    </script>
 </body>
-</html> 
+</html>
