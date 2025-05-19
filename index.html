@@ -373,6 +373,13 @@
         .reset-button:hover {
             background-color: #475569;
         }
+        
+        @media (max-width: 480px) {
+            .reset-button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
 
         /* Add styles for time input */
         input[type="datetime-local"] {
@@ -504,6 +511,12 @@
             .custom-legend li {
                 flex-basis: 100%;
             }
+            
+            .tooltip:hover::after {
+                white-space: normal;
+                max-width: 200px;
+                text-align: center;
+            }
         }
 
         .custom-legend li:hover {
@@ -531,15 +544,25 @@
             width: 100%;
         }
         
-        @media (min-width: 768px) {
+        .time-group {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 480px) {
             .time-selects {
-                display: flex;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 gap: 8px;
             }
             
             #drinkTimeDay,
             #drinkTimeHour {
-                flex: 1;
+                width: 100%;
+            }
+            
+            .time-group label {
+                margin-bottom: 8px;
+                display: block;
             }
         }
     </style>
@@ -598,13 +621,15 @@
             
                 <div class="input-group time-group">
                     <label for="drinkTime">Time Consumed</label>
-                    <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
-                        <option value="0">Today</option>
-                        <option value="1">Tomorrow</option>
-                    </select>
-                    <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
-                        <!-- Will be populated by JavaScript -->
-                    </select>
+                    <div class="time-selects">
+                        <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
+                            <option value="0">Today</option>
+                            <option value="1">Tomorrow</option>
+                        </select>
+                        <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
                 </div>
             </div>
 
