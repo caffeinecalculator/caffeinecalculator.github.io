@@ -13,6 +13,11 @@
             padding: 20px;
             background-color: #f8fafc;
             color: #334155;
+            box-sizing: border-box;
+        }
+        
+        *, *:before, *:after {
+            box-sizing: inherit;
         }
 
         .container {
@@ -61,6 +66,7 @@
             body {
                 padding: 10px;
                 max-width: 100%;
+                min-width: auto; /* Remove min-width constraint */
             }
             
             .container {
@@ -77,6 +83,25 @@
             
             .drink-input .button-group {
                 flex-direction: column;
+            }
+            
+            .input-group select,
+            .input-group input[type="number"] {
+                width: 100%;
+                min-width: 0; /* Override any min-width */
+            }
+            
+            .chart-container {
+                min-height: 200px; /* Slightly reduce minimum height on mobile */
+            }
+            
+            .custom-legend ul {
+                gap: 5px; /* Tighter spacing on mobile */
+            }
+            
+            .custom-legend li {
+                padding: 3px 6px; /* Smaller padding on mobile */
+                font-size: 0.75rem; /* Even smaller text on small screens */
             }
         }
 
@@ -95,6 +120,8 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
+            width: 100%;
+            max-width: 100%;
         }
 
         /* Add styles to control button placement */
@@ -107,7 +134,7 @@
 
         .drink-input .button-group button {
             flex: 1;
-            min-width: 150px;
+            min-width: 0; /* Override default min-width */
         }
 
         h1 {
@@ -142,6 +169,7 @@
             transition: border-color 0.15s ease;
             width: 100%;
             box-sizing: border-box;
+            max-width: 100%; /* Ensure no overflow */
         }
 
         .input-group select:focus,
@@ -239,6 +267,8 @@
             border-radius: 6px;
             margin-top: 12px;
             font-weight: 500;
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         .warning.very-safe {
@@ -291,6 +321,7 @@
             width: 100% !important;
             height: auto !important;  /* Allow height to adjust */
             aspect-ratio: 16/9;  /* Maintain aspect ratio */
+            max-width: 100%;  /* Prevent overflow */
         }
 
         .drink-entry {
@@ -338,6 +369,9 @@
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-family: inherit;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         /* Add loading state for buttons */
@@ -376,6 +410,9 @@
             font-weight: 600;
             font-size: 1.25rem;
             transition: all 0.2s ease;
+            max-width: calc(100% - 16px);
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .caffeine-total.very-safe {
@@ -402,6 +439,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .custom-legend {
@@ -1159,7 +1197,7 @@
                             maxRotation: 45,
                             minRotation: 45,
                             autoSkip: true,
-                            maxTicksLimit: 12
+                            maxTicksLimit: window.innerWidth < 480 ? 6 : 12
                         },
                         grid: {
                             display: true,
