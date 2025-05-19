@@ -120,7 +120,9 @@
             
             .time-selects > select {
                 flex: 1 1 auto; /* Allow items to grow and shrink */
-                min-width: 100px; /* Minimum width for readability */
+                min-width: 0; /* Remove minimum width to prevent overflow */
+                width: 100%; /* Ensure full width */
+                box-sizing: border-box;
             }
             
             .chart-container {
@@ -644,12 +646,17 @@
             max-width: 100%;
             flex: 1;
             min-height: 38px; /* Ensure consistent height */
+            margin-bottom: 2px; /* Add some breathing room between stacked elements */
         }
         
         /* Make the parent containers constrain properly */
         .input-group.time-group {
             width: 100%;
             max-width: 100%;
+            overflow: visible; /* Changed from hidden to avoid issues */
+            margin-bottom: 5px; /* Add some spacing */
+        }
+        
         /* Specific styles for drink type dropdown to prevent overflow issues */
         #drinkType {
             width: 100%;
@@ -678,9 +685,6 @@
             position: relative;
             z-index: 1;
         }
-            overflow: visible; /* Changed from hidden to avoid issues */
-            margin-bottom: 5px; /* Add some spacing */
-        }
         
         @media (min-width: 768px) {
             .time-selects {
@@ -706,11 +710,16 @@
             /* Set absolute minimum widths and paddings */
             body {
                 padding: 2px;
-                min-width: 300px; /* Absolute minimum width */
+                width: 100%; /* Use 100% width instead of min-width */
+                max-width: 100%;
+                min-width: 0;
             }
             
             .container {
                 padding: 5px;
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
             }
             
             /* Stack everything vertically */
@@ -718,11 +727,13 @@
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 5px !important;
+                width: 100%;
             }
             
             /* Remove all horizontal padding in form elements */
             .drink-input, .result, .timeline {
                 padding: 5px;
+                width: 100%;
             }
             
             h1 {
@@ -741,15 +752,56 @@
                 margin-bottom: 3px;
             }
             
+            /* Time selection controls for very small screens */
+            .time-selects {
+                flex-direction: column !important; /* Force vertical stacking */
+                width: 100% !important;
+                max-width: 100%;
+            }
+            
+            #drinkTimeDay, 
+            #drinkTimeHour {
+                width: 100% !important;
+                margin-bottom: 5px;
+                flex-basis: 100% !important;
+                min-width: 0 !important;
+            }
+            
             /* Minimize button padding */
             button {
                 padding: 6px 8px;
                 font-size: 0.8rem;
             }
             
-            /* Hide non-essential UI elements or make them more compact */
-            .custom-legend h4 {
-                font-size: 0.8rem;
+            /* Additional specific styles for drink entries on extremely small screens */
+            .drink-entry {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 4px 6px;
+                gap: 5px;
+                width: 100%;
+            }
+            
+            .drink-entry span {
+                font-size: 0.85rem;
+                width: 100%;
+            }
+            
+            .drink-entry button {
+                align-self: flex-end;
+                padding: 4px 6px;
+                font-size: 0.75rem;
+                margin-top: 2px;
+            }
+            
+            /* Chart adjustments */
+            .chart-container {
+                min-height: 150px;
+            }
+            
+            .custom-legend {
+                padding: 4px;
+                margin-top: 5px;
             }
         }
             <div class="input-row">
