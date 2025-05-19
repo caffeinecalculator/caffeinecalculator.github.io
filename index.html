@@ -56,6 +56,29 @@
                 max-width: 90%;
             }
         }
+        
+        @media (max-width: 480px) {  /* Small mobile screens */
+            body {
+                padding: 10px;
+                max-width: 100%;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .drink-input, .result, .timeline {
+                padding: 15px;
+            }
+            
+            .drink-input .button-group {
+                flex-direction: column;
+            }
+        }
 
         .drink-input {
             grid-area: input;
@@ -272,7 +295,10 @@
 
         .drink-entry {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
+            align-items: center;
+            gap: 10px;
             padding: 8px 12px;
             border-radius: 6px;
             transition: background-color 0.15s ease;
@@ -288,6 +314,7 @@
             background-color: #ef4444;
             padding: 6px 12px;
             font-size: 0.875rem;
+            flex-shrink: 0;
         }
 
         .drink-entry button:hover {
@@ -386,7 +413,7 @@
             margin-bottom: 10px;
             max-width: 100%;
             box-sizing: border-box;
-            overflow-x: visible;  /* Remove scrollbar */
+            overflow-x: auto;  /* Allow horizontal scrolling if needed */
         }
 
         .custom-legend h4 {
@@ -398,7 +425,7 @@
         .custom-legend ul {
             display: flex;
             flex-wrap: wrap;  /* Ensure items wrap to next line */
-            gap: 12px;
+            gap: 8px;
             list-style: none;
             padding: 0;
             margin: 0;
@@ -412,6 +439,7 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.15s ease;
+            font-size: 0.875rem; /* Slightly smaller text for mobile */
         }
 
         .custom-legend li:hover {
@@ -790,7 +818,7 @@
                 entry.className = 'drink-entry';
                 const timeStr = drink.timestamp.toLocaleString();
                 entry.innerHTML = `
-                    <span>${timeStr}: ${drink.quantity}x ${drink.name}</span>
+                    <span style="word-break: break-word;">${timeStr}: ${drink.quantity}x ${drink.name}</span>
                     <button onclick="removeDrink(${drink.id})">Remove</button>
                 `;
                 history.appendChild(entry);
@@ -1216,7 +1244,7 @@
             let fixedHTML = '<h4>Metrics & Reference Levels</h4><ul>';
             chart.data.datasets.slice(0, 4).forEach((dataset, idx) => {
                 const isHidden = !chart.isDatasetVisible(idx);
-                fixedHTML += `<li style="display:inline-block;margin-right:10px;cursor:pointer;" onclick="toggleDataset(${idx})">
+                fixedHTML += `<li onclick="toggleDataset(${idx})">
                     <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
                     ${dataset.label}
                 </li>`;
@@ -1229,7 +1257,7 @@
             if (chart.data.datasets.length > 4) {
                 chart.data.datasets.slice(4).forEach((dataset, idx) => {
                     const isHidden = !chart.isDatasetVisible(idx + 4);
-                    drinksHTML += `<li style="display:inline-block;margin-right:10px;cursor:pointer;" onclick="toggleDataset(${idx + 4})">
+                    drinksHTML += `<li onclick="toggleDataset(${idx + 4})">
                         <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
                         ${dataset.label}
                     </li>`;
