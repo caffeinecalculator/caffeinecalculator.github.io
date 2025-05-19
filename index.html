@@ -108,12 +108,19 @@
                 max-width: 100%; /* Prevent overflow */
                 padding: 8px; /* Slightly reduce padding on mobile */
                 box-sizing: border-box;
+                min-height: 38px; /* Ensure consistent height */
             }
             
             .time-selects {
-                flex-direction: column;
+                flex-direction: row; /* Changed from column to row */
                 gap: 5px;
                 width: 100%;
+                flex-wrap: wrap; /* Ensure wrapping on small screens */
+            }
+            
+            .time-selects > select {
+                flex: 1 1 auto; /* Allow items to grow and shrink */
+                min-width: 100px; /* Minimum width for readability */
             }
             
             .chart-container {
@@ -149,6 +156,7 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            margin-bottom: 5px; /* Ensure spacing between rows */
         }
 
         /* Add styles to control button placement */
@@ -549,6 +557,7 @@
             width: 100%;
             box-sizing: border-box;
             max-width: 100%;
+            flex-wrap: wrap; /* Ensure items wrap when space is limited */
         }
         
         /* Add new extra-small screen media query for extremely small devices */
@@ -586,12 +595,17 @@
             }
             
             .time-selects {
-                flex-basis: 100%;
                 flex-direction: column;
+                margin-bottom: 5px;
+            }
+            
+            #drinkTimeDay, 
+            #drinkTimeHour {
+                flex-basis: 100%;
+                margin-bottom: 5px;
             }
             
             .input-group.time-group {
-                min-width: 100%;
                 width: 100%;
             }
         }
@@ -603,19 +617,50 @@
             min-width: 0;
             max-width: 100%;
             flex: 1;
+            min-height: 38px; /* Ensure consistent height */
         }
         
         /* Make the parent containers constrain properly */
         .input-group.time-group {
             width: 100%;
             max-width: 100%;
+        /* Specific styles for drink type dropdown to prevent overflow issues */
+        #drinkType {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal; /* Allow text to wrap within dropdown */
+            min-height: 38px; /* Ensure consistent height */
+        }
+
+        /* Improve select element appearance and consistency */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 10px;
+            padding-right: 25px !important;
+        }
+
+        /* Ensure proper z-index for dropdowns */
+        .input-group {
+            position: relative;
+            z-index: 1;
+        }
+            overflow: visible; /* Changed from hidden to avoid issues */
+            margin-bottom: 5px; /* Add some spacing */
         }
         
         @media (min-width: 768px) {
             .time-selects {
                 flex-direction: row;
                 gap: 8px;
+                flex-wrap: nowrap; /* Don't wrap on larger screens */
             }
             
             #drinkTimeDay,
