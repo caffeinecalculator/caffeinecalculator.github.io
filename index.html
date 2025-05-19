@@ -89,6 +89,13 @@
             .input-group input[type="number"] {
                 width: 100%;
                 min-width: 0; /* Override any min-width */
+                max-width: 100%; /* Prevent overflow */
+                padding: 8px; /* Slightly reduce padding on mobile */
+            }
+            
+            .time-selects {
+                flex-direction: column;
+                gap: 5px;
             }
             
             .chart-container {
@@ -151,6 +158,8 @@
             flex-direction: column;
             gap: 5px;
             width: 100%;
+            box-sizing: border-box;
+            max-width: 100%; /* Ensure no overflow */
         }
 
         .input-group label {
@@ -170,6 +179,9 @@
             width: 100%;
             box-sizing: border-box;
             max-width: 100%; /* Ensure no overflow */
+            -webkit-appearance: none; /* Remove default styling on iOS */
+            appearance: none; /* Standardized version */
+            background-color: white; /* Ensure background is visible */
         }
 
         .input-group select:focus,
@@ -500,14 +512,56 @@
             margin-bottom: 8px;
         }
         
+        .time-selects {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        /* Add new extra-small screen media query for extremely small devices */
+        @media (max-width: 360px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .drink-input, .result, .timeline {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            
+            .input-group label {
+                font-size: 0.8rem;
+            }
+            
+            .input-group select,
+            .input-group input[type="number"] {
+                padding: 6px;
+                font-size: 0.85rem;
+            }
+            
+            button {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+        }
+            width: 100%;
+        }
+        
         #drinkTimeDay,
         #drinkTimeHour {
             width: 100%;
+            box-sizing: border-box;
         }
         
         @media (min-width: 768px) {
             .time-selects {
-                display: flex;
+                flex-direction: row;
                 gap: 8px;
             }
             
@@ -572,13 +626,15 @@
             
                 <div class="input-group time-group">
                     <label for="drinkTime">Time Consumed</label>
-                    <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
-                        <option value="0">Today</option>
-                        <option value="1">Tomorrow</option>
-                    </select>
-                    <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
-                        <!-- Will be populated by JavaScript -->
-                    </select>
+                    <div class="time-selects">
+                        <select id="drinkTimeDay" class="tooltip" data-tooltip="Which day?">
+                            <option value="0">Today</option>
+                            <option value="1">Tomorrow</option>
+                        </select>
+                        <select id="drinkTimeHour" class="tooltip" data-tooltip="What time?">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -1357,31 +1413,8 @@
             sleepSelect.dispatchEvent(new Event('change'));
         }
 
-        // Add some CSS for the new time selects
-        const style = document.createElement('style');
-        style.textContent = `
-            .input-group select {
-                margin-bottom: 8px;
-            }
-            
-            #drinkTimeDay,
-            #drinkTimeHour {
-                width: 100%;
-            }
-            
-            @media (min-width: 768px) {
-                .time-selects {
-                    display: flex;
-                    gap: 8px;
-                }
-                
-                #drinkTimeDay,
-                #drinkTimeHour {
-                    flex: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+        // Add some CSS for the new time selects - remove this as we've now added these styles directly to the CSS
+        // This function is now empty as we've properly incorporated these styles in the static CSS
     </script>
 </body>
 </html> 
