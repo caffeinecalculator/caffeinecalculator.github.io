@@ -56,6 +56,23 @@
                 max-width: 90%;
             }
         }
+        
+        /* Additional mobile optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px; /* Reduce body padding */
+            }
+            
+            .container {
+                padding: 15px; /* Reduce container padding */
+                gap: 15px; /* Smaller gap between elements */
+            }
+            
+            h1 {
+                font-size: 1.5rem; /* Smaller heading on mobile */
+                margin-bottom: 1rem;
+            }
+        }
 
         .drink-input {
             grid-area: input;
@@ -73,6 +90,17 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
+        
+        /* Optimize input rows on very small screens */
+        @media (max-width: 480px) {
+            .drink-input .input-row {
+                grid-template-columns: 1fr; /* Single column on very small screens */
+            }
+            
+            .input-group {
+                margin-bottom: 5px; /* Add some spacing between inputs */
+            }
+        }
 
         /* Add styles to control button placement */
         .drink-input .button-group {
@@ -84,7 +112,14 @@
 
         .drink-input .button-group button {
             flex: 1;
-            min-width: 150px;
+            min-width: 0; /* Remove min-width to prevent overflow */
+        }
+        
+        /* Stack buttons on small screens */
+        @media (max-width: 480px) {
+            .drink-input .button-group {
+                flex-direction: column;
+            }
         }
 
         h1 {
@@ -269,6 +304,18 @@
             height: auto !important;  /* Allow height to adjust */
             aspect-ratio: 16/9;  /* Maintain aspect ratio */
         }
+        
+        /* Adjust chart container on mobile */
+        @media (max-width: 480px) {
+            .chart-container {
+                min-height: 250px; /* Slightly smaller on mobile */
+            }
+            
+            .timeline {
+                padding: 15px; /* Less padding on mobile */
+                min-height: 500px; /* Smaller min-height */
+            }
+        }
 
         .drink-entry {
             display: flex;
@@ -278,6 +325,20 @@
             transition: background-color 0.15s ease;
             max-width: 100%;
             box-sizing: border-box;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 8px; /* Add gap between content and button */
+        }
+        
+        @media (max-width: 480px) {
+            .drink-entry {
+                flex-direction: column; /* Stack content on small screens */
+                align-items: flex-start;
+            }
+            
+            .drink-entry button {
+                align-self: flex-end;
+                margin-top: 5px; /* Add space between text and button */
+            }
         }
 
         .drink-entry:hover {
@@ -375,6 +436,19 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        
+        /* Adjust caffeine total display on mobile */
+        @media (max-width: 480px) {
+            .caffeine-total {
+                font-size: 1rem; /* Smaller font size on mobile */
+                padding: 6px 12px; /* Smaller padding */
+            }
+            
+            .result p {
+                margin: 10px 0; /* Add some vertical spacing */
+            }
         }
 
         .custom-legend {
@@ -412,6 +486,17 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.15s ease;
+            font-size: 0.9rem; /* Slightly smaller font for legend items */
+            word-break: break-word; /* Allow breaking long words */
+        }
+        
+        /* Adjust legend items on small screens */
+        @media (max-width: 480px) {
+            .custom-legend li {
+                font-size: 0.8rem; /* Even smaller font on mobile */
+                padding: 3px 6px;
+                flex-basis: 100%; /* Full width on small screens */
+            }
         }
 
         .custom-legend li:hover {
@@ -448,6 +533,18 @@
             #drinkTimeDay,
             #drinkTimeHour {
                 flex: 1;
+            }
+        }
+        
+        /* Additional styling for time selects on mobile */
+        @media (max-width: 767px) {
+            #drinkTimeDay {
+                margin-bottom: 8px; /* Add space between selects when stacked */
+            }
+            
+            .time-selects {
+                display: flex;
+                flex-direction: column;
             }
         }
     </style>
