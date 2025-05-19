@@ -189,6 +189,7 @@
             width: 100%;
             box-sizing: border-box;
             max-width: 100%; /* Ensure no overflow */
+            margin-bottom: 5px; /* Add consistent spacing */
         }
 
         .input-group label {
@@ -594,19 +595,35 @@
                 font-size: 0.85rem;
             }
             
+            /* Force column layout for time selects on very small screens */
             .time-selects {
                 flex-direction: column;
                 margin-bottom: 5px;
             }
             
+            /* Make each select take full width */
             #drinkTimeDay, 
             #drinkTimeHour {
                 flex-basis: 100%;
                 margin-bottom: 5px;
+                width: 100%;
             }
             
+            /* Ensure time group contains its children */
             .input-group.time-group {
                 width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            /* Further reduce font size */
+            .custom-legend li {
+                font-size: 0.7rem;
+                padding: 2px 4px;
+            }
+            
+            /* Reduce padding in all inputs for tighter layout */
+            .drink-input, .result, .timeline {
+                padding: 8px;
             }
         }
         
@@ -675,6 +692,57 @@
         <h1>Caffeine Intake Calculator</h1>
         
         <div class="drink-input">
+        /* Fallbacks for extremely small screens or unusual devices */
+        @media (max-width: 320px) {
+            /* Set absolute minimum widths and paddings */
+            body {
+                padding: 2px;
+                min-width: 300px; /* Absolute minimum width */
+            }
+            
+            .container {
+                padding: 5px;
+            }
+            
+            /* Stack everything vertically */
+            .input-row {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 5px !important;
+            }
+            
+            /* Remove all horizontal padding in form elements */
+            .drink-input, .result, .timeline {
+                padding: 5px;
+            }
+            
+            h1 {
+                font-size: 1.1rem;
+                margin: 5px 0;
+            }
+            
+            /* Minimize all spacing */
+            .drink-input .input-row {
+                gap: 5px;
+            }
+            
+            /* Force single column for all inputs */
+            .input-group {
+                width: 100% !important;
+                margin-bottom: 3px;
+            }
+            
+            /* Minimize button padding */
+            button {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+            }
+            
+            /* Hide non-essential UI elements or make them more compact */
+            .custom-legend h4 {
+                font-size: 0.8rem;
+            }
+        }
             <div class="input-row">
                 <div class="input-group">
                     <label for="drinkType">Drink Type</label>
