@@ -268,26 +268,95 @@
             width: 100% !important;
             height: auto !important;  /* Allow height to adjust */
             aspect-ratio: 16/9;  /* Maintain aspect ratio */
+            max-width: 100%;
+        }
+        
+        @media (max-width: 480px) {
+            .chart-container {
+                min-height: 200px;
+            }
         }
 
         .drink-entry {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px 12px;
             border-radius: 6px;
             transition: background-color 0.15s ease;
             max-width: 100%;
             box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .drink-entry:hover {
             background-color: #f8fafc;
         }
 
+        .drink-entry .drink-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .drink-entry button {
             background-color: #ef4444;
             padding: 6px 12px;
             font-size: 0.875rem;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 480px) {
+            .drink-entry {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .drink-entry button {
+                align-self: flex-end;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .result p {
+                flex-wrap: wrap;
+            }
+            
+            .caffeine-total {
+                width: 100%;
+                margin-top: 5px;
+                text-align: center;
+            }
+            
+            .drink-input, .result, .timeline {
+                padding: 15px;
+            }
+            
+            .drink-input .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .drink-input .button-group button {
+                width: 100%;
+            }
         }
 
         .drink-entry button:hover {
@@ -375,6 +444,19 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 480px) {
+            .result p {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .caffeine-total {
+                align-self: stretch;
+                text-align: center;
+            }
         }
 
         .custom-legend {
@@ -412,6 +494,16 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.15s ease;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .custom-legend li {
+                flex-basis: 100%;
+            }
         }
 
         .custom-legend li:hover {
@@ -790,7 +882,7 @@
                 entry.className = 'drink-entry';
                 const timeStr = drink.timestamp.toLocaleString();
                 entry.innerHTML = `
-                    <span>${timeStr}: ${drink.quantity}x ${drink.name}</span>
+                    <span class="drink-info">${timeStr}: ${drink.quantity}x ${drink.name}</span>
                     <button onclick="removeDrink(${drink.id})">Remove</button>
                 `;
                 history.appendChild(entry);
@@ -1131,7 +1223,10 @@
                             maxRotation: 45,
                             minRotation: 45,
                             autoSkip: true,
-                            maxTicksLimit: 12
+                            maxTicksLimit: window.innerWidth < 480 ? 6 : 12,
+                            font: {
+                                size: window.innerWidth < 480 ? 8 : 12
+                            }
                         },
                         grid: {
                             display: true,
@@ -1216,7 +1311,7 @@
             let fixedHTML = '<h4>Metrics & Reference Levels</h4><ul>';
             chart.data.datasets.slice(0, 4).forEach((dataset, idx) => {
                 const isHidden = !chart.isDatasetVisible(idx);
-                fixedHTML += `<li style="display:inline-block;margin-right:10px;cursor:pointer;" onclick="toggleDataset(${idx})">
+                fixedHTML += `<li onclick="toggleDataset(${idx})">
                     <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
                     ${dataset.label}
                 </li>`;
@@ -1229,7 +1324,7 @@
             if (chart.data.datasets.length > 4) {
                 chart.data.datasets.slice(4).forEach((dataset, idx) => {
                     const isHidden = !chart.isDatasetVisible(idx + 4);
-                    drinksHTML += `<li style="display:inline-block;margin-right:10px;cursor:pointer;" onclick="toggleDataset(${idx + 4})">
+                    drinksHTML += `<li onclick="toggleDataset(${idx + 4})">
                         <span class="color-dot ${isHidden ? 'dataset-hidden' : ''}" style="background-color:${dataset.borderColor}"></span>
                         ${dataset.label}
                     </li>`;
